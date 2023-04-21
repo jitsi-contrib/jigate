@@ -1,0 +1,2 @@
+#!/bin/sh
+fs_cli --host=$(hostname) --password=$JIGATE_ESL_PASSWORD ${@:+-x} "$@"

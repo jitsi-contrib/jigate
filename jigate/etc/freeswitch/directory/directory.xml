@@ -1,0 +1,14 @@
+<domain name="meet.jitsi">
+    <groups>
+        <group name="200">
+            <users>
+                <user id="jigasi">
+                    <params>
+                        <param name="password" value="$${jigasi_password}" />
+                        <param name="dial-string" value="${sofia_contact(${dialed_user}@${dialed_domain})}"/>
+                    </params>
+                </user>
+            </users>
+        </group>
+    </groups>
+</domain>

@@ -1,0 +1,50 @@
+---
+version: '3.8'
+
+services:
+  jigate:
+    image: jigate/jigate:latest
+    restart: ${RESTART_POLICY:-unless-stopped}
+    environment:
+      - JIGASI_SIP_PASSWORD
+      - JIGATE_ESL_PASSWORD
+      - JIGATE_SIP_PASSWORD
+      - JIGATE_SIP_PORT=${JIGATE_SIP_PORT:-5060}
+      - JIGATE_SIP_DOMAIN=${JIGATE_SIP_DOMAIN:-meet.jitsi}
+      - JIGATE_SIP_SERVER=${JIGATE_SIP_SERVER:-sipgw.meet.jitsi}
+      - JIGATE_SIP_USERNAME=${JIGATE_SIP_USERNAME:-jigate}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    networks:
+      jigate:
+        aliases:
+          - jigate
+      meet.jitsi:
+        aliases:
+          - ${JIGASI_SIP_SERVER:-jigate.meet.jitsi}
+
+  jigatecon:
+    image: jigate/jigatecon:latest
+    restart: ${RESTART_POLICY:-unless-stopped}
+    environment:
+      - JIGASI_SIP_URI=jigasi@meet.jitsi
+      - JIGATE_ESL_PASSWORD
+      - JIGATE_SERVER=${JIGASI_SIP_SERVER:-jigate.meet.jitsi}
+      - LOG_LEVEL
+    networks:
+      meet.jitsi:
+    depends_on:
+      - jigate
+
+  jigasi:
+    environment:
+      - JIGASI_SIP_SERVER=${JIGASI_SIP_SERVER:-jigate.meet.jitsi}
+      - JIGASI_SIP_URI=jigasi@meet.jitsi
+    depends_on:
+      - jigate
+
+  jicofo:
+    environment:
+      - JIGASI_SIP_URI=jigasi@meet.jitsi
+
+networks:
+  jigate:

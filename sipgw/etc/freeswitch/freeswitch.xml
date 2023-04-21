@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<document type="freeswitch/xml">
+
+    <X-PRE-PROCESS cmd="env-set" data="external_ip=$SIPGW_EXTERNAL_IP"/>
+    <X-PRE-PROCESS cmd="env-set" data="internal_sip_port=$JIGATE_SIP_PORT"/>
+    <X-PRE-PROCESS cmd="env-set" data="jigate_domain=$JIGATE_SIP_DOMAIN"/>
+    <X-PRE-PROCESS cmd="env-set" data="jigate_password=$JIGATE_SIP_PASSWORD"/>
+    <X-PRE-PROCESS cmd="env-set" data="jigate_username=$JIGATE_SIP_USERNAME"/>
+    <X-PRE-PROCESS cmd="env-set" data="loglevel=$LOG_LEVEL"/>
+    <X-PRE-PROCESS cmd="env-set" data="rtp_end_port=$SIPGW_RTP_END_PORT"/>
+    <X-PRE-PROCESS cmd="env-set" data="rtp_start_port=$SIPGW_RTP_START_PORT"/>
+    <X-PRE-PROCESS cmd="env-set" data="user_password=$SIPGW_USER_PASSWORD"/>
+
+    <X-PRE-PROCESS cmd="set" data="global_codec_prefs=OPUS,G722,SPEEX,PCMU,PCMA,GSM"/>
+    <X-PRE-PROCESS cmd="set"
+data="outbound_codec_prefs=OPUS,G722,SPEEX,PCMU,PCMA,GSM"/>
+
+    <section name="configuration" description="Various Configuration">
+        <X-PRE-PROCESS cmd="include" data="autoload_configs/*.xml"/>
+    </section>
+
+    <section name="dialplan" description="Regex/XML Dialplan">
+        <X-PRE-PROCESS cmd="include" data="dialplan/*.xml"/>
+    </section>
+
+    <section name="directory" description="User Directory">
+        <X-PRE-PROCESS cmd="include" data="directory/*.xml"/>
+    </section>
+
+</document>

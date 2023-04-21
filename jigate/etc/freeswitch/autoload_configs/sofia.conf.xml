@@ -1,0 +1,69 @@
+<configuration name="sofia.conf" description="sofia Endpoint">
+    <global_settings>
+        <param name="auth-calls" value="true"/>
+        <param name="auth-all-packets" value="false"/>
+        <param name="challenge-realm" value="auto_from"/>
+        <param name="debug" value="0"/>
+        <param name="debug-presence" value="0"/>
+        <param name="dialplan" value="XML"/>
+        <param name="dtmf-duration" value="2000"/>
+        <param name="forward-unsolicited-mwi-notify" value="false"/>
+        <param name="inbound-codec-negotiation" value="generous"/>
+        <param name="log-auth-failures" value="false"/>
+        <param name="log-level" value="0"/>
+        <param name="manage-presence" value="false"/>
+        <param name="media_hold_timeout" value="1800"/>
+        <param name="media_timeout" value="300000"/>
+        <param name="nonce-ttl" value="60″"/>
+        <param name="rfc2833-pt" value="101"/>
+        <param name="rtp-timer-name" value="soft"/>
+        <param name="tls" value="false"/>
+        <param name="user-agent-string" value="Jigasi Freeswitch gateway"/>
+    </global_settings>
+    <profiles>
+        <profile name="sipgw">
+            <settings>
+                <param name="context" value="public"/>
+                <param name="sip-trace" value="yes"/>
+                <param name="sip-ip" value="interface:ipv4/eth0"/>
+                <param name="rtp-ip" value="interface:ipv4/eth0"/>
+                <param name="local-network-acl" value="rfc1918.auto"/>
+                <param name="disable-transcoding" value="false"/>
+                <param name="inbound-late-negotiation" value="true"/>
+                <param name="inherit_codec" value="true"/>
+            </settings>
+
+            <gateways>
+                <gateway name="sipgw">
+                    <param name="proxy" value="$${sipgw_server}:$${sipgw_port}"/>
+                    <param name="from-domain" value="$${sipgw_domain}"/>
+                    <param name="username" value="$${sipgw_username}"/>
+                    <param name="password" value="$${sipgw_password}"/>
+                    <param name="expire-seconds" value="60"/>
+                    <param name="extension-in-contact" value="true"/>
+                    <param name="caller-id-in-from" value="true"/>
+                </gateway>
+            </gateways>
+
+            <domains>
+                <domain name="all" alias="false" parse="true"/>
+            </domains>
+        </profile>
+        <profile name="jigasi">
+            <settings>
+                <param name="context" value="default"/>
+                <param name="sip-trace" value="yes"/>
+                <param name="sip-ip" value="interface:ipv4/eth1"/>
+                <param name="rtp-ip" value="interface:ipv4/eth1"/>
+                <param name="local-network-acl" value="rfc1918.auto"/>
+                <param name="disable-transcoding" value="false"/>
+                <param name="inbound-late-negotiation" value="true"/>
+                <param name="inherit_codec" value="true"/>
+            </settings>
+
+            <domains>
+                <domain name="all" alias="false" parse="true"/>
+            </domains>
+        </profile>
+    </profiles>
+</configuration>

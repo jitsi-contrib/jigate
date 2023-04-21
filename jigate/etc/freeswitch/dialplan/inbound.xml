@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<include>
+   <context name="public">
+      <extension name="inbound">
+         <condition field="destination_number" expression=".*">
+            <action application="event" data="Event-Name=JIGASI_CALL,Meeting-URI=${sip_h_X-Meeting-URI}"/>
+            <action application="park"/>
+         </condition>
+      </extension>
+   </context>
+</include>

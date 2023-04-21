@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<include>
+   <context name="public">
+      <extension name="inbound">
+         <condition field="destination_number" expression="^\d+(\.[a-z0-9-_.]+)?$">
+            <action application="set" data="sip_h_X-Meeting-URI=$0"/>
+            <action application="bridge" data="user/jigate@meet.jitsi"/>
+         </condition>
+      </extension>
+   </context>
+</include>

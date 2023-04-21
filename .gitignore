@@ -1,0 +1,5 @@
+.vscode/
+dist/
+**/etc/freeswitch/tls
+node_modules/
+.DS_Store
