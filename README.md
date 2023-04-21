@@ -32,14 +32,24 @@ In a production environment, this service would be replaced by your [PBX].
 
 ## Setup
 
-To setup jigate using [docker-jitsi-meet], copy the [jigate.yml](jigate.yml) and  [sipgw.yml](sipgw.yml) files to your `docker-jitsi-meet` deployment directory, add any environment vars from [jigate.env](jigate.env) to your `.env` file and run:
+To setup jigate using [docker-jitsi-meet]:
 
-```shell
-docker-compose -f docker-compose.yml -f jigasi.yml -f sipgw.yml -f jigate.yml up -d
-````
+1. Build the Docker images:
+
+    ```shell
+    ./rebuild.sh
+    ```
+
+1. Copy the [jigate.yml](jigate.yml) and  [sipgw.yml](sipgw.yml) files to your `docker-jitsi-meet` deployment directory.
+1. Add any environment vars from [jigate.env](jigate.env) to your `.env` file.
+1. In `docker-jitsi-meet` run:
+
+    ```shell
+    docker-compose -f docker-compose.yml -f jigasi.yml -f sipgw.yml -f jigate.yml up -d
+    ```
 
 > In a production environment you would register the [jigate](#jigate) service to your PBX
-> and would not deploy the [sipgw](#sipgw) service. In this case you will not use
+> and would not deploy the [sipgw](#sipgw) service and therefore not use
 > the [sipgw.yml](sipgw.yml) file.
 
 ## Test
