@@ -11,7 +11,7 @@ curl -o package-lock.json  https://raw.githubusercontent.com/englercj/node-esl/f
 npm ci
 npm run build
 cd ../..
-echo "#### Build jigsi project"
+echo "#### Build the jigatecon project"
 npm run build
 echo "#### Rebuild docker image"
 docker build -t jigate/jigatecon .
