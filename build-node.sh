@@ -13,8 +13,3 @@ npm run build
 cd ../..
 echo "#### Build the jigatecon project"
 npm run build
-echo "#### Rebuild docker image"
-docker build -t jigate/jigatecon .
-for service in jigate sipgw; do
-    docker build -t jigate/$service $service
-done

@@ -37,7 +37,7 @@ To setup jigate using [docker-jitsi-meet]:
 1. Build the Docker images:
 
     ```shell
-    ./rebuild.sh
+    ./build.sh
     ```
 
 1. Copy the [jigate.yml](jigate.yml) and  [sipgw.yml](sipgw.yml) files to your `docker-jitsi-meet` deployment directory.
