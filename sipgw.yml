@@ -4,6 +4,7 @@ version: '3.8'
 services:
   sipgw:
     image: jigate/sipgw:latest
+    restart: ${RESTART_POLICY:-unless-stopped}
     ports:
       - '${SIPGW_EXTERNAL_SIP_PORT:-5060}:5060/udp'
       - '${SIPGW_RTP_START_PORT:-20200}-${SIPGW_RTP_END_PORT:-20250}:${SIPGW_RTP_START_PORT:-20200}-${SIPGW_RTP_END_PORT:-20250}/udp'
