@@ -2,6 +2,7 @@
 <document type="freeswitch/xml">
 
     <X-PRE-PROCESS cmd="env-set" data="external_ip=$SIPGW_EXTERNAL_IP"/>
+    <X-PRE-PROCESS cmd="env-set" data="external_sip_port=$SIPGW_EXTERNAL_SIP_PORT"/>
     <X-PRE-PROCESS cmd="env-set" data="internal_ip=$SIPGW_INTERNAL_IP"/>
     <X-PRE-PROCESS cmd="env-set" data="internal_sip_port=$JIGATE_SIP_PORT"/>
     <X-PRE-PROCESS cmd="env-set" data="jigate_domain=$JIGATE_SIP_DOMAIN"/>
