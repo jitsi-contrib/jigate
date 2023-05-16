@@ -5,19 +5,33 @@ services:
   jigate:
     image: jigate/jigate:latest
     restart: ${RESTART_POLICY:-unless-stopped}
+    ports:
+      - '${JIGATE_EXTERNAL_SIP_PORT:-5060}:${JIGATE_EXTERNAL_SIP_PORT:-5060}/udp'
+      - '${JIGATE_RTP_START_PORT:-20200}-${JIGATE_RTP_END_PORT:-20250}:${JIGATE_RTP_START_PORT:-20200}-${JIGATE_RTP_END_PORT:-20250}/udp'
+    volumes:
+      - ../jigate/jigate/etc/freeswitch:/etc/freeswitch
+      - ../jigate/jigate/usr/share/freeswitch/sounds:/usr/share/freeswitch/sounds
     environment:
       - JIGASI_SIP_PASSWORD
       - JIGATE_ESL_PASSWORD
-      - JIGATE_SIP_PASSWORD
-      - JIGATE_SIP_PORT=${JIGATE_SIP_PORT:-5060}
-      - JIGATE_SIP_DOMAIN=${JIGATE_SIP_DOMAIN:-meet.jitsi}
-      - JIGATE_SIP_SERVER=${JIGATE_SIP_SERVER:-sipgw.meet.jitsi}
-      - JIGATE_SIP_USERNAME=${JIGATE_SIP_USERNAME:-jigate}
+      - JIGATE_EXTERNAL_IP=${JIGATE_EXTERNAL_IP:-127.0.0.1}
+      - JIGATE_EXTERNAL_SIP_PORT=${JIGATE_EXTERNAL_SIP_PORT:-5060}
+      - JIGATE_INTERNAL_IP=${JIGATE_INTERNAL_IP:-interface:ipv4/eth1}
+      - JIGATE_INTERNAL_SIP_PORT=${JIGASI_SIP_PORT:-5060}
+      - JIGATE_REGISTRATION_PASSWORD
+      - JIGATE_REGISTRATION_USERNAME=${JIGATE_REGISTRATION_USER:-user}
+      - JIGATE_RTP_END_PORT=${JIGATE_RTP_END_PORT:-20250}
+      - JIGATE_RTP_START_PORT=${JIGATE_RTP_START_PORT:-20200}
       - LOG_LEVEL=${LOG_LEVEL:-info}
+      - SIPGW_SIP_DOMAIN=${SIPGW_SIP_DOMAIN:-meet.jitsi}
+      - SIPGW_SIP_PASSWORD
+      - SIPGW_SIP_PORT=${SIPGW_SIP_PORT:-5060}
+      - SIPGW_SIP_SERVER=${SIPGW_SIP_SERVER:-sipgw.meet.jitsi}
+      - SIPGW_SIP_USERNAME=${SIPGW_SIP_USERNAME:-jigate}
     networks:
       jigate:
         aliases:
-          - jigate
+          - ${JIGASI_SIP_SERVER:-jigate.meet.jitsi}
       meet.jitsi:
         aliases:
           - ${JIGASI_SIP_SERVER:-jigate.meet.jitsi}
@@ -25,6 +39,8 @@ services:
   jigatecon:
     image: jigate/jigatecon:latest
     restart: ${RESTART_POLICY:-unless-stopped}
+    volumes:
+      - ../jigate:/home/node/jigatecon
     environment:
       - JIGASI_SIP_URI=jigasi@meet.jitsi
       - JIGATE_ESL_PASSWORD
@@ -38,6 +54,7 @@ services:
   jigasi:
     environment:
       - JIGASI_SIP_SERVER=${JIGASI_SIP_SERVER:-jigate.meet.jitsi}
+      - JIGASI_SIP_PORT=${JIGASI_SIP_PORT:-5060}
       - JIGASI_SIP_URI=jigasi@meet.jitsi
     depends_on:
       - jigate

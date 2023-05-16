@@ -1,14 +1,20 @@
 <domain name="meet.jitsi">
-    <groups>
-        <group name="200">
-            <users>
-                <user id="jigasi">
-                    <params>
-                        <param name="password" value="$${jigasi_password}" />
-                        <param name="dial-string" value="${sofia_contact(${dialed_user}@${dialed_domain})}"/>
-                    </params>
-                </user>
-            </users>
-        </group>
-    </groups>
+    <params>
+        <param name="dial-string" value="${sofia_contact(${dialed_user}@${dialed_domain})}"/>
+    </params>
+    <users>
+        <user id="$${jigate_registration_username}">
+            <params>
+                <param name="password" value="$${jigate_registration_password}"/>
+            </params>
+            <variables>
+                <variable name="sip-force-contact" value="NDLB-connectile-dysfunction-2.0"/>
+            </variables>
+        </user>
+        <user id="jigasi">
+            <params>
+                <param name="password" value="$${jigasi_sip_password}" />
+            </params>
+        </user>
+    </users>
 </domain>

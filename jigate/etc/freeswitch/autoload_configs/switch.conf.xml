@@ -3,11 +3,11 @@
         <param name="colorize-console" value="true"/>
         <param name="max-sessions" value="1000"/>
         <param name="sessions-per-second" value="30"/>
-        <param name="loglevel" value="$${loglevel}"/>
+        <param name="loglevel" value="$${log_level}"/>
         <param name="dump-cores" value="yes"/>
         <param name="rtp-enable-zrtp" value="false"/>
-        <param name="rtp-start-port" value="20000"/>
-        <param name="rtp-end-port" value="29998"/>
+        <param name="rtp-start-port" value="$${jigate_rtp_start_port}"/>
+        <param name="rtp-end-port" value="$${jigate_rtp_end_port}"/>
         <param name="max-audio-channels" value="1"/>
         <!-- Have RECV_INFO events include custom channel variables. -->
         <param name="verbose-channel-events" value="yes"/>

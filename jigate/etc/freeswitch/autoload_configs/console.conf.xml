@@ -1,9 +1,9 @@
 <configuration name="console.conf" description="Console Logger">
     <settings>
         <param name="colorize" value="true"/>
-        <param name="loglevel" value="$${loglevel}"/>
-        <param name="log_event" value="$${loglevel}"/>
-        <param name="all" value="$${loglevel}"/>
+        <param name="loglevel" value="$${log_level}"/>
+        <param name="log_event" value="$${log_level}"/>
+        <param name="all" value="$${log_level}"/>
     </settings>
     <mappings>
         <map name="all" value="console,debug,info,notice,warning,err,crit,alert"/>
