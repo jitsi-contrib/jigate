@@ -4,8 +4,6 @@ DIR=$(dirname "$(pwd)/$0")
 set -euxo pipefail
 cd $DIR
 ./build-node.sh
-echo "#### Rebuild docker image"
+echo "#### Rebuild the docker images"
 docker build -t jigate/jigatecon .
-for service in jigate sipgw; do
-    docker build -t jigate/$service $service
-done
+docker build -t jigate/jigate jigate

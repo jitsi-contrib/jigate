@@ -6,8 +6,8 @@
 
 The [jigate](jigate) directory contains the configuration and Docker file of a FreeSWITCH service
 which serves as a SIP gateway for [jigasi].
-It registers to a [SIP gateway (sipgw)](#sipgw) service and receives calls for [jitsi meet].
-It is controlled by the [jigatecon](#jigatecon) esl service.
+It can register to a SIP gateway service or allows a user or gateway to register.
+It receives calls for [jitsi meet] and is controlled by the [jigatecon](#jigatecon) esl service.
 
 ## Jigatecon
 
@@ -23,13 +23,6 @@ It is based on the following tutorials:
   Use of @tsconfig/node16, @types/node, ts-node, .eslintignore and .vscode.
 - [Developing applications for FreeSWITCH]
 
-## Sipgw
-
-The [sipgw](sipgw) directory contains the configuration and Docker file of a development SIP gateway service.
-It allows clients to register and call into [jitsi meet] conferences.
-
-In a production environment, this service would be replaced by your [PBX].
-
 ## Setup
 
 To setup jigate using [docker-jitsi-meet]:
@@ -40,21 +33,17 @@ To setup jigate using [docker-jitsi-meet]:
     ./build.sh
     ```
 
-1. Copy the [jigate.yml](jigate.yml) and  [sipgw.yml](sipgw.yml) files to your `docker-jitsi-meet` deployment directory.
-1. Add any environment vars from [jigate.env](jigate.env) to your `.env` file.
+1. Copy the [jigate.yml](jigate.yml) file to your `docker-jitsi-meet` deployment directory.
+1. Add the environment vars from [jigate.env](jigate.env) to your `.env` file.
 1. In `docker-jitsi-meet` run:
 
     ```shell
-    docker-compose -f docker-compose.yml -f jigasi.yml -f sipgw.yml -f jigate.yml up -d
+    docker-compose -f docker-compose.yml -f jigasi.yml -f jigate.yml up -d
     ```
-
-> In a production environment you would register the [jigate](#jigate) service to your PBX
-> and would not deploy the [sipgw](#sipgw) service and therefore not use
-> the [sipgw.yml](sipgw.yml) file.
 
 ## Test
 
-1. Register a SIP client to the [sipgw](#sipgw) service at `<sip:127.0.0.1;transport=udp>` as `"<Display name>" <sip:user@meet.jitsi>`
+1. Register a SIP client to the [jigate](#jigate) service at `<sip:127.0.0.1;transport=udp>` as `"<Display name>" <sip:user@meet.jitsi>`
 1. Call `sip:<meeting id>@127.0.0.1`.
 
 [Developing applications for FreeSWITCH]: https://medium.com/makingtuenti/developing-applications-for-freeswitch-fccbe75ada81
