@@ -24,8 +24,10 @@ const init = () => {
         connection.on(ConnectionEvent.Error, handleConnectionFailure);
 
         connection.on(EventFilter.ChannelBridge, handleChannelBridge);
+        connection.on(EventFilter.ChannelExecuteComplete, handleChannelExecuteComplete);
         connection.on(EventFilter.ChannelHangup, handleChannelHangup);
-        connection.on(EventFilter.JigasiCall, handleJigasiCall);
+        connection.on(EventFilter.CallHeader, handleCallHeader);
+        connection.on(EventFilter.CallIVR, handleCallIVR);
         connection.on(EventFilter.HandRaiseToggle, handleHandRaiseToggle);
         connection.on(EventFilter.MuteToggle, handleMuteToggle);
         connection.on(EventFilter.RecvInfo, handleRecvInfo);
@@ -49,6 +51,34 @@ const handleConnectionFailure = () => {
     setTimeout(init, CONNECTION_RETRY_TIMEOUT);
 }
 
+
+const connectToMeeting = (meetingURI: string, participantUuid: string) => {
+    // Split meetingURI at the first dot. See https://stackoverflow.com/a/4607799/13431526.
+    const [ roomName, domainBase ] = meetingURI.split(/\.(.+)$/s)
+
+    freeswitch.executeAsync('log', `CONSOLE New Jigasi call to Jitsi meeting id ${roomName}`, participantUuid);
+    domainBase && freeswitch.executeAsync('set', `sip_h_X-Domain-Base=${domainBase}`, participantUuid);
+    freeswitch.executeAsync('multiset', `sip_h_X-Room-Name=${roomName} originate_timeout=3600`, participantUuid);
+    freeswitch.executeAsync('bridge', `{absolute_codec_string='OPUS'}[leg_timeout=3600]user/${jigasiSipUri}`, participantUuid);
+    // setCallState(event, CallState.WaitConference)
+};
+
+const handleCallHeader = (event: Event) => (event => {
+    const { meetingURI, name, participantUuid } = event;
+
+    if (meetingURI) {
+        Log.info(`${name} event with participantUuid (${participantUuid}) and Meeting-URL (${meetingURI}).`);
+        connectToMeeting(meetingURI, participantUuid);
+    } else Log.error(`${name} event without a Meeting-URI. This is unsupported.`)
+})(new ChannelEvent(event));
+
+const handleCallIVR = (event: Event) => (event => {
+    const { participantUuid } = event;
+
+    freeswitch.executeAsync('answer', '', participantUuid);
+    freeswitch.executeAsync('play_and_get_digits', `9 10 3 5000 =# ${AudioMessage.EnterYourMeetingId} ${AudioMessage.UnknownMeetingId} meeting_id \\d+`, participantUuid);
+})(new ChannelEvent(event));
+
 const handleChannelBridge = (event: Event) => (event => {
     const { jigasiUuid, name, participantUuid } = event;
 
@@ -67,6 +97,19 @@ const handleChannelBridge = (event: Event) => (event => {
     } else Log.error(`${name} event for participantUuid (${participantUuid}) without a jigasiUuid (${jigasiUuid}). This is unexpected.`)
 })(new ChannelEvent(event));
 
+const handleChannelExecuteComplete = (event: Event) => (event => {
+    const { application, meetingId, name, participantUuid } = event;
+
+    if (application == 'play_and_get_digits') {
+        if (typeof meetingId == 'string') {
+            Log.info(`${name} event of play_and_get_digits with participantUuid (${participantUuid}) and meetingId (${meetingId}).`);
+
+            const meetingURI = meetingId;
+            connectToMeeting(meetingURI, participantUuid);
+        }
+    }
+})(new ChannelEvent(event));
+
 const handleChannelHangup = (event: Event) => (event => {
     const { createdTime, hangupCause, isBridged, isInbound, jigasiUuid, name, participantUuid } = event;
 
@@ -81,23 +124,6 @@ const handleChannelHangup = (event: Event) => (event => {
         freeswitch.executeAsync('sched_hangup', '+70 allotted_timeout', participantUuid);
         loopAudioMessage(event, AudioMessage.ConferenceEndedByHost);
     }
-})(new ChannelEvent(event));
-
-const handleJigasiCall = (event: Event) => (event => {
-    const { meetingURI, name, participantUuid } = event;
-
-    if (meetingURI) {
-        Log.info(`${name} event with participantUuid (${participantUuid}) and Meeting-URL (${meetingURI}).`);
-
-        // Split meetingURI at the first dot. See https://stackoverflow.com/a/4607799/13431526.
-        const [ roomName, domainBase ] = meetingURI.split(/\.(.+)$/s)
-
-        freeswitch.executeAsync('log', `CONSOLE New Jigasi call to Jitsi meeting id ${roomName}`, participantUuid);
-        domainBase && freeswitch.executeAsync('set', `sip_h_X-Domain-Base=${domainBase}`, participantUuid);
-        freeswitch.executeAsync('multiset', `sip_h_X-Room-Name=${roomName} originate_timeout=3600`, participantUuid);
-        freeswitch.executeAsync('bridge', `{absolute_codec_string='OPUS'}[leg_timeout=3600]user/${jigasiSipUri}`, participantUuid);
-        setCallState(event, CallState.WaitConference)
-    } else Log.error(`${name} event without a Meeting-URI. This is unsupported.`)
 })(new ChannelEvent(event));
 
 const handleMuteToggle = (event: Event) => (event => {

@@ -6,6 +6,7 @@
     <X-PRE-PROCESS cmd="env-set" data="jigate_external_sip_port=$JIGATE_EXTERNAL_SIP_PORT"/>
     <X-PRE-PROCESS cmd="env-set" data="jigate_internal_ip=$JIGATE_INTERNAL_IP"/>
     <X-PRE-PROCESS cmd="env-set" data="jigate_internal_sip_port=$JIGATE_INTERNAL_SIP_PORT"/>
+    <X-PRE-PROCESS cmd="env-set" data="jigate_ivr_destination=$JIGATE_IVR_DESTINATION"/>
     <X-PRE-PROCESS cmd="env-set" data="jigate_registration_password=$JIGATE_REGISTRATION_PASSWORD"/>
     <X-PRE-PROCESS cmd="env-set" data="jigate_registration_username=$JIGATE_REGISTRATION_USERNAME"/>
     <X-PRE-PROCESS cmd="env-set" data="jigate_rtp_end_port=$JIGATE_RTP_END_PORT"/>

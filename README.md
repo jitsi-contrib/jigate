@@ -44,7 +44,7 @@ To setup jigate using [docker-jitsi-meet]:
 ## Test
 
 1. Register a SIP client to the [jigate](#jigate) service at `<sip:127.0.0.1;transport=udp>` as `"<Display name>" <sip:user@meet.jitsi>`
-1. Call `sip:<meeting id>@127.0.0.1`.
+1. Call `sip:1000@127.0.0.1` to dial into an ivr and provide the meeting id or call `sip:<meeting id>@127.0.0.1`.
 
 [Developing applications for FreeSWITCH]: https://medium.com/makingtuenti/developing-applications-for-freeswitch-fccbe75ada81
 [docker-jitsi-meet]: https://github.com/jitsi/docker-jitsi-meet

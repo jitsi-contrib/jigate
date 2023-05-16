@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <include>
    <context name="public">
-      <extension name="inbound">
-         <condition field="destination_number" expression=".*">
-            <action application="event" data="Event-Name=JIGASI_CALL,Meeting-URI=${sip_h_X-Meeting-URI}"/>
+      <extension name="header-call">
+         <condition field="sip_h_X-Meeting-URI" expression="^.+$">
+            <action application="event" data="Event-Name=HEADER_CALL"/>
+         </condition>
+      </extension>
+      <extension name="ivr-call">
+         <condition field="destination_number" expression="$${jigate_ivr_destination}">
+            <action application="event" data="Event-Name=CALL_IVR"/>
             <action application="park"/>
+         </condition>
+      </extension>
+      <extension name="uri-call">
+         <condition field="destination_number" expression="^\d+(\.[a-z0-9-_.]+)?$">
+            <action application="set" data="sip_h_X-Meeting-URI=$0"/>
+            <action application="event" data="Event-Name=HEADER_CALL"/>
          </condition>
       </extension>
    </context>

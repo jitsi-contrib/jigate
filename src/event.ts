@@ -10,6 +10,7 @@ export enum CustomChannelVariables {
     CallState = 'call_state',
     HandRaised = 'hand_raised',
     LoopingAudioMessage = 'looping_audio_message',
+    MeetingId = 'meeting_id',
     Muted = 'muted',
     Nickname = 'nickname',
 }
@@ -33,7 +34,8 @@ export enum EventFilter {
     ChannelHangup = 'esl::event::CHANNEL_HANGUP::*',
     HandRaiseToggle = 'esl::event::HAND_RAISE_TOGGLE::*',
     Heartbeat = 'esl::event::HEARTBEAT::*',
-    JigasiCall = 'esl::event::JIGASI_CALL::*',
+    CallHeader = 'esl::event::CALL_HEADER::*',
+    CallIVR = 'esl::event::CALL_IVR::*',
     MuteToggle = 'esl::event::MUTE_TOGGLE::*',
     RecvInfo = 'esl::event::RECV_INFO::*',
     SessionHeartbeat = 'esl::event::SESSION_HEARTBEAT::*',
@@ -55,6 +57,7 @@ export class ChannelEvent {
     jigasiMessage: JigasiMessage | undefined;
     jigasiUuid;
     loopingAudioMessage;
+    meetingId;
     meetingURI;
     muted;
     name;
@@ -79,6 +82,7 @@ export class ChannelEvent {
             [`variable_${CustomChannelVariables.CallState}`]: callState,
             [`variable_${CustomChannelVariables.HandRaised}`]: handRaised,
             [`variable_${CustomChannelVariables.LoopingAudioMessage}`]: loopingAudioMessage,
+            [`variable_${CustomChannelVariables.MeetingId}`]: meetingId,
             [`variable_${CustomChannelVariables.Muted}`]: muted,
             [`variable_${CustomChannelVariables.Nickname}`]: nickname,
         } = event.headers;
@@ -96,6 +100,7 @@ export class ChannelEvent {
         this.isJigasiCall = calleeIdNumber == JIGASI_USER_ID;
         this.isJigasiEvent = sipFromUser == JIGASI_USER_ID;
         this.loopingAudioMessage = loopingAudioMessage as AudioMessage;
+        this.meetingId = meetingId;
         this.meetingURI = meetingUri;
         this.muted = muted == 'true';
         this.name = name;
