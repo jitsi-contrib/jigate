@@ -76,7 +76,7 @@ const handleCallIVR = (event: Event) => (event => {
     const { participantUuid } = event;
 
     freeswitch.executeAsync('answer', '', participantUuid);
-    freeswitch.executeAsync('play_and_get_digits', `9 10 5 10000 =# ${AudioMessage.EnterYourMeetingId} ${AudioMessage.UnknownMeetingId} ${CustomChannelVariables.MeetingIdInput} \\d+ 1 XML hangup`, participantUuid);
+    freeswitch.executeAsync('play_and_get_digits', `9 10 5 10000 =# ${AudioMessage.EnterYourMeetingId} ${AudioMessage.UnknownMeetingId} ${CustomChannelVariables.MeetingIdInput} \\d+ "1 XML hangup"`, participantUuid);
 })(new ChannelEvent(event));
 
 const handleChannelBridge = (event: Event) => (event => {
