@@ -1,18 +1,20 @@
 # Jigate services
 
+Jigate is a SIP gateway for Jigasi based on FreeSWITCH.
+
 [![jigate services](jigate.drawio.svg)](jigate.drawio.svg)
 
 ## Jigate
 
 The [jigate](jigate) directory contains the configuration and Docker file of a FreeSWITCH service
 which serves as a SIP gateway for [jigasi].
-It can register to a SIP gateway service or allows a user or gateway to register.
+It can register to a SIP gateway service or allow a user or gateway to register.
 It receives calls for [jitsi meet] and is controlled by the [jigatecon](#jigatecon) esl service.
 
 ## Jigatecon
 
 The jigatecon service controls the behavior of the [jigate](#jigate) FreeSWITCH instance.
-SIP participants can control their mute and raised hand status.
+SIP participants can toggle their mute and raised hand status.
 
 The service uses [node-esl] and is written in **TypeScript**.
 It is based on the following tutorials:
@@ -43,8 +45,9 @@ To setup jigate using [docker-jitsi-meet]:
 
 ## Test
 
-1. Register a SIP client to the [jigate](#jigate) service at `<sip:127.0.0.1;transport=udp>` as `"<Display name>" <sip:user@meet.jitsi>`
-1. Call `sip:1000@127.0.0.1` to dial into an ivr and provide the meeting id or call `sip:<meeting id>@127.0.0.1`.
+1. Register a SIP client as `"<Display name>" <sip:user@meet.jitsi>` to the [jigate](#jigate) service at `<sip:127.0.0.1;transport=udp>`.
+1. Call `sip:1000@127.0.0.1` to dial into an ivr and provide the meeting id
+   or directly connect to a meeting by calling `sip:<meeting id>@127.0.0.1`.
 
 [Developing applications for FreeSWITCH]: https://medium.com/makingtuenti/developing-applications-for-freeswitch-fccbe75ada81
 [docker-jitsi-meet]: https://github.com/jitsi/docker-jitsi-meet
