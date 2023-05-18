@@ -7,7 +7,7 @@ import { ConnectionEvent } from 'modesl/dist/esl/Connection';
 
 import { AudioMessage } from './audioMessage';
 import { CallState, loopAudioMessage, playAudioMessage, sendJigasiInfoRequest, sendJigasiMuteRequest, setAvModeration, setCallState, setHandRaised, setMuted, setNickname } from './call';
-import { ChannelEvent, EventFilter, ChannelEventName } from './event'
+import { ChannelEvent, EventFilter, ChannelEventName, CustomChannelVariables } from './event'
 import freeswitch from './freeswitch';
 import { JigasiMessageHeader, JigasiMessageType } from './jigasiMessage';
 import Log from './log';
@@ -76,7 +76,7 @@ const handleCallIVR = (event: Event) => (event => {
     const { participantUuid } = event;
 
     freeswitch.executeAsync('answer', '', participantUuid);
-    freeswitch.executeAsync('play_and_get_digits', `9 10 3 5000 =# ${AudioMessage.EnterYourMeetingId} ${AudioMessage.UnknownMeetingId} meeting_id \\d+`, participantUuid);
+    freeswitch.executeAsync('play_and_get_digits', `9 10 5 10000 =# ${AudioMessage.EnterYourMeetingId} ${AudioMessage.UnknownMeetingId} ${CustomChannelVariables.MeetingIdInput} \\d+ 1 XML hangup`, participantUuid);
 })(new ChannelEvent(event));
 
 const handleChannelBridge = (event: Event) => (event => {
@@ -98,13 +98,13 @@ const handleChannelBridge = (event: Event) => (event => {
 })(new ChannelEvent(event));
 
 const handleChannelExecuteComplete = (event: Event) => (event => {
-    const { application, meetingId, name, participantUuid } = event;
+    const { application, applicationData, meetingIdInput, name, participantUuid } = event;
 
     if (application == 'play_and_get_digits') {
-        if (typeof meetingId == 'string') {
-            Log.info(`${name} event of play_and_get_digits with participantUuid (${participantUuid}) and meetingId (${meetingId}).`);
+        if (applicationData?.includes(CustomChannelVariables.MeetingIdInput) && meetingIdInput) {
+            Log.info(`${name} event of play_and_get_digits with participantUuid (${participantUuid}) and meetingIdInput (${meetingIdInput}).`);
 
-            const meetingURI = meetingId;
+            const meetingURI = meetingIdInput;
             connectToMeeting(meetingURI, participantUuid);
         }
     }

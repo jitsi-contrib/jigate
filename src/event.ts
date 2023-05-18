@@ -10,7 +10,7 @@ export enum CustomChannelVariables {
     CallState = 'call_state',
     HandRaised = 'hand_raised',
     LoopingAudioMessage = 'looping_audio_message',
-    MeetingId = 'meeting_id',
+    MeetingIdInput = 'meeting_id_input',
     Muted = 'muted',
     Nickname = 'nickname',
 }
@@ -44,6 +44,7 @@ export enum EventFilter {
 export class ChannelEvent {
     avModeration;
     application;
+    applicationData;
     body;
     callState;
     createdTime;
@@ -57,7 +58,7 @@ export class ChannelEvent {
     jigasiMessage: JigasiMessage | undefined;
     jigasiUuid;
     loopingAudioMessage;
-    meetingId;
+    meetingIdInput;
     meetingURI;
     muted;
     name;
@@ -67,6 +68,7 @@ export class ChannelEvent {
     constructor(event: Event) {
         const {
             'Application': application,
+            'Application-Data': applicationData,
             'Call-Direction': callDirection,
             'Caller-Callee-ID-Number': calleeIdNumber,
             'Caller-Channel-Created-Time': createdTime,
@@ -82,12 +84,13 @@ export class ChannelEvent {
             [`variable_${CustomChannelVariables.CallState}`]: callState,
             [`variable_${CustomChannelVariables.HandRaised}`]: handRaised,
             [`variable_${CustomChannelVariables.LoopingAudioMessage}`]: loopingAudioMessage,
-            [`variable_${CustomChannelVariables.MeetingId}`]: meetingId,
+            [`variable_${CustomChannelVariables.MeetingIdInput}`]: meetingIdInput,
             [`variable_${CustomChannelVariables.Muted}`]: muted,
             [`variable_${CustomChannelVariables.Nickname}`]: nickname,
         } = event.headers;
 
         this.application = application;
+        this.applicationData = applicationData;
         this.avModeration = avModeration == 'true';
         this.body = event.getBody();
         this.callState = callState;
@@ -100,7 +103,7 @@ export class ChannelEvent {
         this.isJigasiCall = calleeIdNumber == JIGASI_USER_ID;
         this.isJigasiEvent = sipFromUser == JIGASI_USER_ID;
         this.loopingAudioMessage = loopingAudioMessage as AudioMessage;
-        this.meetingId = meetingId;
+        this.meetingIdInput = meetingIdInput;
         this.meetingURI = meetingUri;
         this.muted = muted == 'true';
         this.name = name;
