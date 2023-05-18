@@ -14,6 +14,7 @@ import Log from './log';
 
 const CONNECTION_RETRY_TIMEOUT = 10000;
 const jigasiSipUri = process.env.JIGASI_SIP_URI;
+const ivrNumber = process.env.JIGATE_IVR_DESTINATION;
 
 const init = () => {
     freeswitch.connect()
@@ -26,8 +27,7 @@ const init = () => {
         connection.on(EventFilter.ChannelBridge, handleChannelBridge);
         connection.on(EventFilter.ChannelExecuteComplete, handleChannelExecuteComplete);
         connection.on(EventFilter.ChannelHangup, handleChannelHangup);
-        connection.on(EventFilter.CallHeader, handleCallHeader);
-        connection.on(EventFilter.CallIVR, handleCallIVR);
+        connection.on(EventFilter.InboundCall, handleInboundCall);
         connection.on(EventFilter.HandRaiseToggle, handleHandRaiseToggle);
         connection.on(EventFilter.MuteToggle, handleMuteToggle);
         connection.on(EventFilter.RecvInfo, handleRecvInfo);
@@ -52,9 +52,9 @@ const handleConnectionFailure = () => {
 }
 
 
-const connectToMeeting = (meetingURI: string, participantUuid: string) => {
+const connectToMeeting = (destinationNumber: string, participantUuid: string) => {
     // Split meetingURI at the first dot. See https://stackoverflow.com/a/4607799/13431526.
-    const [ roomName, domainBase ] = meetingURI.split(/\.(.+)$/s)
+    const [ roomName, domainBase ] = destinationNumber.split(/\.(.+)$/s)
 
     freeswitch.executeAsync('log', `CONSOLE New Jigasi call to Jitsi meeting id ${roomName}`, participantUuid);
     domainBase && freeswitch.executeAsync('set', `sip_h_X-Domain-Base=${domainBase}`, participantUuid);
@@ -63,20 +63,17 @@ const connectToMeeting = (meetingURI: string, participantUuid: string) => {
     // setCallState(event, CallState.WaitConference)
 };
 
-const handleCallHeader = (event: Event) => (event => {
-    const { meetingURI, name, participantUuid } = event;
+const handleInboundCall = (event: Event) => (event => {
+    const { destinationNumber, name, participantUuid } = event;
 
-    if (meetingURI) {
-        Log.info(`${name} event with participantUuid (${participantUuid}) and Meeting-URL (${meetingURI}).`);
-        connectToMeeting(meetingURI, participantUuid);
-    } else Log.error(`${name} event without a Meeting-URI. This is unsupported.`)
-})(new ChannelEvent(event));
-
-const handleCallIVR = (event: Event) => (event => {
-    const { participantUuid } = event;
-
-    freeswitch.executeAsync('answer', '', participantUuid);
-    freeswitch.executeAsync('play_and_get_digits', `9 10 5 10000 =# ${AudioMessage.EnterYourMeetingId} ${AudioMessage.UnknownMeetingId} ${CustomChannelVariables.MeetingIdInput} \\d+ "1 XML hangup"`, participantUuid);
+    if (!destinationNumber || destinationNumber == ivrNumber) {
+        Log.info(`${name} event from participantUuid (${participantUuid}) to IVR (${destinationNumber}).`);
+        freeswitch.executeAsync('answer', '', participantUuid);
+        freeswitch.executeAsync('play_and_get_digits', `9 10 5 10000 =# ${AudioMessage.EnterYourMeetingId} ${AudioMessage.UnknownMeetingId} ${CustomChannelVariables.MeetingIdInput} \\d+ "1 XML hangup"`, participantUuid);
+    } else {
+        Log.info(`${name} event from participantUuid (${participantUuid}) to destinationNumber (${destinationNumber}).`);
+        connectToMeeting(destinationNumber, participantUuid);
+    }
 })(new ChannelEvent(event));
 
 const handleChannelBridge = (event: Event) => (event => {
@@ -104,8 +101,8 @@ const handleChannelExecuteComplete = (event: Event) => (event => {
         if (applicationData?.includes(CustomChannelVariables.MeetingIdInput) && meetingIdInput) {
             Log.info(`${name} event of play_and_get_digits with participantUuid (${participantUuid}) and meetingIdInput (${meetingIdInput}).`);
 
-            const meetingURI = meetingIdInput;
-            connectToMeeting(meetingURI, participantUuid);
+            const destinationNumber = meetingIdInput;
+            connectToMeeting(destinationNumber, participantUuid);
         }
     }
 })(new ChannelEvent(event));

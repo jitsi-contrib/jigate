@@ -34,36 +34,35 @@ export enum EventFilter {
     ChannelHangup = 'esl::event::CHANNEL_HANGUP::*',
     HandRaiseToggle = 'esl::event::HAND_RAISE_TOGGLE::*',
     Heartbeat = 'esl::event::HEARTBEAT::*',
-    CallHeader = 'esl::event::CALL_HEADER::*',
-    CallIVR = 'esl::event::CALL_IVR::*',
+    InboundCall = 'esl::event::INBOUND_CALL::*',
     MuteToggle = 'esl::event::MUTE_TOGGLE::*',
     RecvInfo = 'esl::event::RECV_INFO::*',
     SessionHeartbeat = 'esl::event::SESSION_HEARTBEAT::*',
 }
 
 export class ChannelEvent {
-    avModeration;
-    application;
-    applicationData;
-    body;
-    callState;
-    createdTime;
-    eslEvent;
-    handRaised;
-    hangupCause;
-    isBridged;
-    isInbound;
-    isJigasiCall;
-    isJigasiEvent;
+    avModeration: boolean;
+    application: string | undefined;
+    applicationData: string | undefined;
+    body: string;
+    callState: string | undefined;
+    createdTime: number;
+    destinationNumber: string | undefined;
+    eslEvent: Event;
+    handRaised: boolean;
+    hangupCause: string | undefined;
+    isBridged: boolean;
+    isInbound: boolean;
+    isJigasiCall: boolean;
+    isJigasiEvent: boolean;
     jigasiMessage: JigasiMessage | undefined;
-    jigasiUuid;
-    loopingAudioMessage;
-    meetingIdInput;
-    meetingURI;
-    muted;
-    name;
-    nickname;
-    participantUuid;
+    jigasiUuid: string | undefined;
+    loopingAudioMessage: AudioMessage;
+    meetingIdInput: string | undefined;
+    muted: boolean;
+    name: string | undefined;
+    nickname: string | undefined;
+    participantUuid: string;
 
     constructor(event: Event) {
         const {
@@ -72,9 +71,9 @@ export class ChannelEvent {
             'Call-Direction': callDirection,
             'Caller-Callee-ID-Number': calleeIdNumber,
             'Caller-Channel-Created-Time': createdTime,
+            'Caller-Destination-Number': destinationNumber,
             'Event-Name': name,
             'Hangup-Cause': hangupCause,
-            'Meeting-URI': meetingUri,
             'Other-Leg-Unique-ID': otherLegUniqueId,
             'SIP-From-User': sipFromUser,
             'variable_bridge_to': bridgedTo,
@@ -95,6 +94,7 @@ export class ChannelEvent {
         this.body = event.getBody();
         this.callState = callState;
         this.createdTime = parseInt(createdTime||'0') / 1000;
+        this.destinationNumber = destinationNumber;
         this.eslEvent = event;
         this.handRaised = handRaised == 'true';
         this.hangupCause = hangupCause;
@@ -104,7 +104,6 @@ export class ChannelEvent {
         this.isJigasiEvent = sipFromUser == JIGASI_USER_ID;
         this.loopingAudioMessage = loopingAudioMessage as AudioMessage;
         this.meetingIdInput = meetingIdInput;
-        this.meetingURI = meetingUri;
         this.muted = muted == 'true';
         this.name = name;
         this.nickname = nickname;
@@ -123,7 +122,7 @@ export class ChannelEvent {
             try {
                 this.jigasiMessage = JSON.parse(this.body);
             } catch (err) {
-                Log.warn('RECV_INFO event from Jigasi with unknown message body:', this.body);
+                Log.warn(`RECV_INFO event from Jigasi with unknown message body: ${this.body}`);
             }
         }
     }
