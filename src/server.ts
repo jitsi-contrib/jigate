@@ -180,6 +180,7 @@ const handleRecvInfo = (event: Event) => (event => {
 
             case JigasiMessageType.LobbyLeft:
                 setCallState(event, CallState.InConference)
+                playAudioMessage(event, AudioMessage.YouAreInTheConference);
                 break;
 
             case JigasiMessageType.LowerHand:
