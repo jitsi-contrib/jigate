@@ -1,5 +1,6 @@
 <domain name="meet.jitsi">
     <params>
+        <param name="allow-empty-password" value="false"/>
         <param name="dial-string" value="${sofia_contact(${dialed_user}@${dialed_domain})}"/>
     </params>
     <users>
