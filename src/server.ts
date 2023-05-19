@@ -52,29 +52,17 @@ const handleConnectionFailure = () => {
 }
 
 
-const connectToMeeting = (destinationNumber: string, participantUuid: string) => {
+const connectToMeeting = (event: ChannelEvent) => {
+    const { destinationNumber, participantUuid } = event;
+
     // Split meetingURI at the first dot. See https://stackoverflow.com/a/4607799/13431526.
-    const [ roomName, domainBase ] = destinationNumber.split(/\.(.+)$/s)
+    const [ roomName, domainBase ] = (destinationNumber||'').split(/\.(.+)$/s)
 
-    freeswitch.executeAsync('log', `CONSOLE New Jigasi call to Jitsi meeting id ${roomName}`, participantUuid);
     domainBase && freeswitch.executeAsync('set', `sip_h_X-Domain-Base=${domainBase}`, participantUuid);
-    freeswitch.executeAsync('multiset', `sip_h_X-Room-Name=${roomName} originate_timeout=3600`, participantUuid);
+    freeswitch.executeAsync('multiset', `sip_h_X-Room-Name=${roomName} originate_timeout=3600 continue_on_fail=true`, participantUuid);
     freeswitch.executeAsync('bridge', `{absolute_codec_string='OPUS'}[leg_timeout=3600]user/${jigasiSipUri}`, participantUuid);
-    // setCallState(event, CallState.WaitConference)
+    setCallState(event, CallState.WaitConference)
 };
-
-const handleInboundCall = (event: Event) => (event => {
-    const { destinationNumber, name, participantUuid } = event;
-
-    if (!destinationNumber || destinationNumber == ivrNumber) {
-        Log.info(`${name} event from participantUuid (${participantUuid}) to IVR (${destinationNumber}).`);
-        freeswitch.executeAsync('answer', '', participantUuid);
-        freeswitch.executeAsync('play_and_get_digits', `9 10 5 10000 =# ${AudioMessage.EnterYourMeetingId} ${AudioMessage.UnknownMeetingId} ${CustomChannelVariables.MeetingIdInput} \\d+ "1 XML hangup"`, participantUuid);
-    } else {
-        Log.info(`${name} event from participantUuid (${participantUuid}) to destinationNumber (${destinationNumber}).`);
-        connectToMeeting(destinationNumber, participantUuid);
-    }
-})(new ChannelEvent(event));
 
 const handleChannelBridge = (event: Event) => (event => {
     const { jigasiUuid, name, participantUuid } = event;
@@ -100,26 +88,44 @@ const handleChannelExecuteComplete = (event: Event) => (event => {
     if (application == 'play_and_get_digits') {
         if (applicationData?.includes(CustomChannelVariables.MeetingIdInput) && meetingIdInput) {
             Log.info(`${name} event of play_and_get_digits with participantUuid (${participantUuid}) and meetingIdInput (${meetingIdInput}).`);
-
-            const destinationNumber = meetingIdInput;
-            connectToMeeting(destinationNumber, participantUuid);
+            freeswitch.executeAsync('transfer', meetingIdInput, participantUuid);
         }
     }
 })(new ChannelEvent(event));
 
 const handleChannelHangup = (event: Event) => (event => {
-    const { createdTime, hangupCause, isBridged, isInbound, jigasiUuid, name, participantUuid } = event;
+    const { createdTime, destinationNumber, hangupCause, isBridged, isInbound, jigasiUuid, name, participantUuid } = event;
 
     const duration = Math.round((new Date().getTime() - createdTime) / 1000);
 
-    Log.info(`${name} event from ${isInbound ? 'participant' : 'Jigasi'} with participantUuid (${participantUuid}) and jigasiUuid (${jigasiUuid}). Cause: ${hangupCause}, call duration: ${duration} seconds.`);
+    Log.info(`${name} event from ${isInbound ? 'participant' : 'Jigasi'} with participantUuid (${participantUuid}) and jigasiUuid (${jigasiUuid}). Cause: ${hangupCause}, call duration: ${duration} seconds. event: ${JSON.stringify(event.eslEvent.headers)}`);
+    setCallState(event, CallState.HungUp);
     if (isInbound) {
         // Participant hung up.
-        setCallState(event, CallState.HungUp);
     } else if (isBridged && jigasiUuid) {
-        // Jigasi hung up. Schedule hangup after 70s.
-        freeswitch.executeAsync('sched_hangup', '+70 allotted_timeout', participantUuid);
-        loopAudioMessage(event, AudioMessage.ConferenceEndedByHost);
+        // Jigasi hung up.
+        if (hangupCause == 'USER_BUSY') {
+            freeswitch.executeAsync('park', '', participantUuid);
+            playAudioMessage(event, AudioMessage.PleaseWaitConferenceStartShortly);
+            freeswitch.executeAsync('sched_transfer', `+30 ${destinationNumber}`, participantUuid);
+        } else {
+            freeswitch.executeAsync('sched_hangup', '+70 allotted_timeout', participantUuid);
+            loopAudioMessage(event, AudioMessage.ConferenceEndedByHost);
+        }
+    }
+})(new ChannelEvent(event));
+
+const handleInboundCall = (event: Event) => (event => {
+    const { destinationNumber, name, participantUuid } = event;
+
+    freeswitch.executeAsync('log', `CONSOLE New Jigasi call to ${destinationNumber}`, participantUuid);
+    if (!destinationNumber || destinationNumber == ivrNumber) {
+        Log.info(`${name} event from participantUuid (${participantUuid}) to IVR (${destinationNumber}).`);
+        freeswitch.executeAsync('answer', '', participantUuid);
+        freeswitch.executeAsync('play_and_get_digits', `9 10 5 10000 =# ${AudioMessage.EnterYourMeetingId} ${AudioMessage.UnknownMeetingId} ${CustomChannelVariables.MeetingIdInput} \\d+ "1 XML hangup"`, participantUuid);
+    } else {
+        Log.info(`${name} event from participantUuid (${participantUuid}) to destinationNumber (${destinationNumber}).`);
+        connectToMeeting(event);
     }
 })(new ChannelEvent(event));
 

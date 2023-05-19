@@ -71,9 +71,10 @@ export class ChannelEvent {
             'Call-Direction': callDirection,
             'Caller-Callee-ID-Number': calleeIdNumber,
             'Caller-Channel-Created-Time': createdTime,
-            'Caller-Destination-Number': destinationNumber,
+            'Caller-Destination-Number': callerDestinationNumber,
             'Event-Name': name,
             'Hangup-Cause': hangupCause,
+            'Other-Leg-Destination-Number': otherLegDestinationNumber,
             'Other-Leg-Unique-ID': otherLegUniqueId,
             'SIP-From-User': sipFromUser,
             'variable_bridge_to': bridgedTo,
@@ -94,7 +95,6 @@ export class ChannelEvent {
         this.body = event.getBody();
         this.callState = callState;
         this.createdTime = parseInt(createdTime||'0') / 1000;
-        this.destinationNumber = destinationNumber;
         this.eslEvent = event;
         this.handRaised = handRaised == 'true';
         this.hangupCause = hangupCause;
@@ -117,6 +117,7 @@ export class ChannelEvent {
         // The participant uuid should always exist. So it should never really be empty.
         // This is just to make TypeScript aware that it is always a string.
         this.participantUuid = (this.isInbound ? uniqueId : otherLegUniqueId)||'';
+        this.destinationNumber = this.isInbound ? callerDestinationNumber : otherLegDestinationNumber;
 
         if (this.name == 'RECV_INFO' && this.isJigasiEvent && this.body) {
             try {
