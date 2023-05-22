@@ -2,8 +2,8 @@
  * FreeSWITCH API.
  */
 
- import { Connection } from 'modesl';
- import { ConnectionEvent } from 'modesl/dist/esl/Connection';
+import { Connection } from 'modesl';
+import { ConnectionEvent } from 'modesl/dist/esl/Connection';
 
 import freeswitchConfig from './config';
 import Log from './log';
@@ -22,7 +22,7 @@ export enum eslLogLevels {
 }
 
 class Freeswitch {
-    connection: Connection|undefined;
+    connection: Connection | undefined;
 
     /**
      * Connect to Event Socket or return the existing connection.
@@ -66,13 +66,13 @@ class Freeswitch {
         Log.info(`[${uuid}] Executing async dial plan application: ${application} ${argument}`);
 
         this.connect()
-        .then(connection => {
-            connection.executeAsync(application, argument, uuid);
-        })
-        .catch(error => {
-            Log.error(`[${uuid}] Error executing async dial plan application ' ${application} ${argument}': ${error.trim()}`);
-            reject(error);
-        });
+            .then(connection => {
+                connection.executeAsync(application, argument, uuid);
+            })
+            .catch(error => {
+                Log.error(`[${uuid}] Error executing async dial plan application ' ${application} ${argument}': ${error.trim()}`);
+                reject(error);
+            });
     });
 
     /**
@@ -86,16 +86,16 @@ class Freeswitch {
         Log.info(`[${reference}] Executing command: ${command}`);
 
         this.connect()
-        .then(connection => {
-            connection.bgapi(command, responseEvent => {
-                const responseBody = responseEvent.getBody();
-                resolve(responseBody);
+            .then(connection => {
+                connection.bgapi(command, responseEvent => {
+                    const responseBody = responseEvent.getBody();
+                    resolve(responseBody);
+                });
+            })
+            .catch(error => {
+                Log.error(`[${reference}] Error executing command '${command}': ${error.trim()}`);
+                reject(error);
             });
-        })
-        .catch(error => {
-            Log.error(`[${reference}] Error executing command '${command}': ${error.trim()}`);
-            reject(error);
-        });
     });
 
 
@@ -111,18 +111,18 @@ class Freeswitch {
      */
     executeWithOkResult = (command: string, reference: string) => new Promise((resolve, reject) => {
         this.bgapi(command, reference)
-        .then(responseBody => {
-            if (this.isSuccessfulResponse(responseBody)) {
-                Log.info(`[${reference}] Command '${command}' executed successfully: ${responseBody.trim()}`);
-                resolve(responseBody);
-            } else {
-                Log.error(`[${reference}] Error executing command '${command}': ${responseBody.trim()}`);
-                reject(responseBody);
-            }
-        })
-        .catch(error => {
-            reject(error);
-        });
+            .then(responseBody => {
+                if (this.isSuccessfulResponse(responseBody)) {
+                    Log.info(`[${reference}] Command '${command}' executed successfully: ${responseBody.trim()}`);
+                    resolve(responseBody);
+                } else {
+                    Log.error(`[${reference}] Error executing command '${command}': ${responseBody.trim()}`);
+                    reject(responseBody);
+                }
+            })
+            .catch(error => {
+                reject(error);
+            });
     });
 }
 

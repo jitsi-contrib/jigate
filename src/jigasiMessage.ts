@@ -23,7 +23,7 @@ export enum JigasiMessageType {
 }
 
 export type JigasiMessage = {
-    [JigasiMessageHeader.Data]?: boolean|string;
+    [JigasiMessageHeader.Data]?: boolean | string;
     [JigasiMessageHeader.Id]: number;
     [JigasiMessageHeader.Type]: JigasiMessageType;
     data?: Record<string, boolean>;
