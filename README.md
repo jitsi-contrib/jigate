@@ -49,6 +49,15 @@ To setup jigate using [docker-jitsi-meet]:
 1. Call `sip:1000@127.0.0.1` to dial into an ivr and provide the meeting id
    or directly connect to a meeting by calling `sip:<meeting id>@127.0.0.1`.
 
+## Monitor
+
+The services can be monitored by REST API at `http://<jigatecon>:8080/stats`. It returns a JSON object with the following data:
+
+- **activeCalls** (integer): the count of active calls
+- **internalProfileRunning** (boolean): whether the Freeswitch internal profile is running
+- **externalProfileRunning** (boolean): whether the Freeswitch external profile is running
+- **registrations** (integer): the count of registrations
+
 [Developing applications for FreeSWITCH]: https://medium.com/makingtuenti/developing-applications-for-freeswitch-fccbe75ada81
 [docker-jitsi-meet]: https://github.com/jitsi/docker-jitsi-meet
 [How To Set Up a Node Project With Typescript]: https://www.digitalocean.com/community/tutorials/setting-up-a-node-project-with-typescript
@@ -56,4 +65,3 @@ To setup jigate using [docker-jitsi-meet]:
 [jigasi]: https://github.com/jitsi/jigasi
 [jitsi meet]: https://github.com/jitsi/jitsi-meet
 [node-esl]: https://github.com/englercj/node-esl
-[PBX]: https://en.wikipedia.org/wiki/Business_telephone_system#Private_branch_exchange
