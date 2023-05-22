@@ -29,6 +29,7 @@ export enum ChannelEventName {
 export enum EventFilter {
     AllSubscription = 'all',
     Any = 'esl::event::*::*',
+    BackgroundJob = 'esl::event::BACKGROUND_JOB::*',
     ChannelBridge = 'esl::event::CHANNEL_BRIDGE::*',
     ChannelExecuteComplete = 'esl::event::CHANNEL_EXECUTE_COMPLETE::*',
     ChannelHangup = 'esl::event::CHANNEL_HANGUP::*',
@@ -57,6 +58,7 @@ export class ChannelEvent {
     isJigasiEvent: boolean;
     jigasiMessage: JigasiMessage | undefined;
     jigasiUuid: string | undefined;
+    job: string | undefined;
     loopingAudioMessage: AudioMessage;
     meetingIdInput: string | undefined;
     muted: boolean;
@@ -74,6 +76,8 @@ export class ChannelEvent {
             'Caller-Destination-Number': callerDestinationNumber,
             'Event-Name': name,
             'Hangup-Cause': hangupCause,
+            'Job-Command': jobCommand,
+            'Job-Command-Arg': jobCommandArg,
             'Other-Leg-Destination-Number': otherLegDestinationNumber,
             'Other-Leg-Unique-ID': otherLegUniqueId,
             'SIP-From-User': sipFromUser,
@@ -94,7 +98,7 @@ export class ChannelEvent {
         this.avModeration = avModeration == 'true';
         this.body = event.getBody();
         this.callState = callState;
-        this.createdTime = parseInt(createdTime||'0') / 1000;
+        this.createdTime = parseInt(createdTime || '0') / 1000;
         this.eslEvent = event;
         this.handRaised = handRaised == 'true';
         this.hangupCause = hangupCause;
@@ -102,6 +106,7 @@ export class ChannelEvent {
         this.isInbound = callDirection == 'inbound';
         this.isJigasiCall = calleeIdNumber == JIGASI_USER_ID;
         this.isJigasiEvent = sipFromUser == JIGASI_USER_ID;
+        this.job = `${jobCommand} ${jobCommandArg}`;
         this.loopingAudioMessage = loopingAudioMessage as AudioMessage;
         this.meetingIdInput = meetingIdInput;
         this.muted = muted == 'true';
@@ -116,7 +121,7 @@ export class ChannelEvent {
         this.jigasiUuid = this.isInbound ? otherLegUniqueId : uniqueId;
         // The participant uuid should always exist. So it should never really be empty.
         // This is just to make TypeScript aware that it is always a string.
-        this.participantUuid = (this.isInbound ? uniqueId : otherLegUniqueId)||'';
+        this.participantUuid = (this.isInbound ? uniqueId : otherLegUniqueId) || '';
         this.destinationNumber = this.isInbound ? callerDestinationNumber : otherLegDestinationNumber;
 
         if (this.name == 'RECV_INFO' && this.isJigasiEvent && this.body) {

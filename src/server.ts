@@ -11,34 +11,47 @@ import { ChannelEvent, EventFilter, ChannelEventName, CustomChannelVariables } f
 import freeswitch from './freeswitch';
 import { JigasiMessageHeader, JigasiMessageType } from './jigasiMessage';
 import Log from './log';
+import restAPI from './restAPI';
+import stats from './stats';
 
 const CONNECTION_RETRY_TIMEOUT = 10000;
 const jigasiSipUri = process.env.JIGASI_SIP_URI;
 const ivrNumber = process.env.JIGATE_IVR_DESTINATION;
+restAPI;
+const STATS_POLLING_INTERVAL = 60000;
+
+enum BackgroundJob {
+    ShowCallsCount = 'show calls count as json',
+    ShowRegistrations = 'show registrations as json',
+    SofiaStatus = 'sofia status',
+}
 
 const init = () => {
     freeswitch.connect()
-    .then((connection: Connection) => {
-        connection.subscribe(EventFilter.AllSubscription);
+        .then((connection: Connection) => {
+            connection.subscribe(EventFilter.AllSubscription);
 
-        connection.on(ConnectionEvent.End, handleConnectionClose);
-        connection.on(ConnectionEvent.Error, handleConnectionFailure);
+            connection.on(ConnectionEvent.End, handleConnectionClose);
+            connection.on(ConnectionEvent.Error, handleConnectionFailure);
 
-        connection.on(EventFilter.ChannelBridge, handleChannelBridge);
-        connection.on(EventFilter.ChannelExecuteComplete, handleChannelExecuteComplete);
-        connection.on(EventFilter.ChannelHangup, handleChannelHangup);
-        connection.on(EventFilter.InboundCall, handleInboundCall);
-        connection.on(EventFilter.HandRaiseToggle, handleHandRaiseToggle);
-        connection.on(EventFilter.MuteToggle, handleMuteToggle);
-        connection.on(EventFilter.RecvInfo, handleRecvInfo);
-        connection.on(EventFilter.SessionHeartbeat, handleSessionHeartbeat);
+            connection.on(EventFilter.BackgroundJob, handleBackgroundJob);
+            connection.on(EventFilter.ChannelBridge, handleChannelBridge);
+            connection.on(EventFilter.ChannelExecuteComplete, handleChannelExecuteComplete);
+            connection.on(EventFilter.ChannelHangup, handleChannelHangup);
+            connection.on(EventFilter.InboundCall, handleInboundCall);
+            connection.on(EventFilter.HandRaiseToggle, handleHandRaiseToggle);
+            connection.on(EventFilter.MuteToggle, handleMuteToggle);
+            connection.on(EventFilter.RecvInfo, handleRecvInfo);
+            connection.on(EventFilter.SessionHeartbeat, handleSessionHeartbeat);
 
-        // In debug mode log any event.
-        Log.isDebugEnabled() && connection.on(EventFilter.Any, (event: Event) => {
-            Log.debug(`${event.getHeader('Event-Name')} event: body ${event.getBody()}`);
-        });
-    })
-    .catch(handleConnectionFailure);
+            // In debug mode log any event.
+            Log.isDebugEnabled() && connection.on(EventFilter.Any, (event: Event) => {
+                Log.debug(`${event.getHeader('Event-Name')} event: body ${event.getBody()}`);
+            });
+
+            setInterval(pollStats, STATS_POLLING_INTERVAL);
+        })
+        .catch(handleConnectionFailure);
 };
 
 const handleConnectionClose = () => {
@@ -56,13 +69,33 @@ const connectToMeeting = (event: ChannelEvent) => {
     const { destinationNumber, participantUuid } = event;
 
     // Split meetingURI at the first dot. See https://stackoverflow.com/a/4607799/13431526.
-    const [ roomName, domainBase ] = (destinationNumber||'').split(/\.(.+)$/s)
+    const [roomName, domainBase] = (destinationNumber || '').split(/\.(.+)$/s)
 
     domainBase && freeswitch.executeAsync('set', `sip_h_X-Domain-Base=${domainBase}`, participantUuid);
     freeswitch.executeAsync('multiset', `sip_h_X-Room-Name=${roomName} originate_timeout=3600 continue_on_fail=true`, participantUuid);
     freeswitch.executeAsync('bridge', `{absolute_codec_string='OPUS'}[leg_timeout=3600]user/${jigasiSipUri}`, participantUuid);
     setCallState(event, CallState.WaitConference)
 };
+
+const handleBackgroundJob = (event: Event) => (event => {
+    const { body, job, name } = event;
+
+    Log.debug(`${name} event (${job}).`);
+    switch (job) {
+        case BackgroundJob.ShowCallsCount:
+            stats.activeCalls = JSON.parse(body)['row_count'];
+            break;
+
+        case BackgroundJob.ShowRegistrations:
+            stats.registrations = JSON.parse(body)['row_count'];
+            break;
+
+        case BackgroundJob.SofiaStatus:
+            stats.internalProfileRunning = /internal.*profile.*RUNNING/.test(body);
+            stats.externalProfileRunning = /external.*profile.*RUNNING/.test(body);
+            break;
+    }
+})(new ChannelEvent(event));
 
 const handleChannelBridge = (event: Event) => (event => {
     const { jigasiUuid, name, participantUuid } = event;
@@ -198,7 +231,7 @@ const handleRecvInfo = (event: Event) => (event => {
                     setNickname(event, jigasiMessageData);
                 }
                 break;
-            }
+        }
         switch (type) {
             case 'muteRequest':
                 // Received when a moderator mutes the participant.
@@ -225,5 +258,11 @@ const handleSessionHeartbeat = (event: Event) => (event => {
     Log.info(`${name} event with participantUuid (${participantUuid}) and jigasiUuid (${jigasiUuid}).`);
     loopingAudioMessage && playAudioMessage(event, loopingAudioMessage);
 })(new ChannelEvent(event));
+
+const pollStats = () => {
+    freeswitch.bgapi(BackgroundJob.ShowCallsCount, '');
+    freeswitch.bgapi(BackgroundJob.ShowRegistrations, '');
+    freeswitch.bgapi(BackgroundJob.SofiaStatus, '');
+}
 
 init();

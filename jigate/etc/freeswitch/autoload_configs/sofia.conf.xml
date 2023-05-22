@@ -21,7 +21,7 @@
         <param name="user-agent-string" value="Jigate"/>
     </global_settings>
     <profiles>
-        <profile name="sipgw">
+        <profile name="external">
             <settings>
                 <param name="context" value="public"/>
                 <param name="sip-trace" value="yes"/>
@@ -53,7 +53,7 @@
                 <domain name="all" alias="false" parse="true"/>
             </domains>
         </profile>
-        <profile name="jigasi">
+        <profile name="internal">
             <settings>
                 <param name="context" value="default"/>
                 <param name="sip-trace" value="yes"/>
