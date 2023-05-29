@@ -40,6 +40,11 @@ To setup jigate using [docker-jitsi-meet]:
 1. Call `sip:1000@127.0.0.1` to dial into an ivr and provide the meeting id
    or directly connect to a meeting by calling `sip:<meeting id>@127.0.0.1`.
 
+## BOSH Multi-domain Support
+
+1. Configure [Jigasi] to [use BOSH].
+1. Call `sip:<meeting id>.<domain>@127.0.0.1` to connect to the meeting at the specified domain.
+
 ## Monitor
 
 The services can be monitored by REST API at `http://<jigate>:8080/stats`. It returns a JSON object with the following data:
@@ -52,3 +57,4 @@ The services can be monitored by REST API at `http://<jigate>:8080/stats`. It re
 [docker-jitsi-meet]: https://github.com/jitsi/docker-jitsi-meet
 [Jigasi]: https://github.com/jitsi/jigasi
 [Jitsi Meet]: https://github.com/jitsi/jitsi-meet
+[use BOSH]: https://community.jitsi.org/t/how-bosh-works-with-jigasi/16284/2
