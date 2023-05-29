@@ -11,5 +11,5 @@ curl -o package-lock.json  https://raw.githubusercontent.com/englercj/node-esl/f
 npm ci
 npm run build
 cd ../..
-echo "#### Build the jigatecon project"
+echo "#### Build the jigate project"
 npm run build

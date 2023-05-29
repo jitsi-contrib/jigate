@@ -2,26 +2,26 @@
 version: '3.8'
 
 services:
-  jigate:
-    image: jigate/jigate:latest
+  freeswitch:
+    image: jigate/freeswitch:latest
     restart: ${RESTART_POLICY:-unless-stopped}
     ports:
-      - '${JIGATE_EXTERNAL_SIP_PORT:-5060}:${JIGATE_EXTERNAL_SIP_PORT:-5060}/udp'
-      - '${JIGATE_RTP_START_PORT:-20200}-${JIGATE_RTP_END_PORT:-20250}:${JIGATE_RTP_START_PORT:-20200}-${JIGATE_RTP_END_PORT:-20250}/udp'
+      - '${FREESWITCH_EXTERNAL_SIP_PORT:-5060}:${FREESWITCH_EXTERNAL_SIP_PORT:-5060}/udp'
+      - '${FREESWITCH_RTP_START_PORT:-20200}-${FREESWITCH_RTP_END_PORT:-20250}:${FREESWITCH_RTP_START_PORT:-20200}-${FREESWITCH_RTP_END_PORT:-20250}/udp'
     volumes:
-      - ../jigate/jigate/etc/freeswitch:/etc/freeswitch
-      - ../jigate/jigate/usr/share/freeswitch/sounds:/usr/share/freeswitch/sounds
+      - ../jigate/freeswitch/etc/freeswitch:/etc/freeswitch
+      - ../jigate/freeswitch/usr/share/freeswitch/sounds:/usr/share/freeswitch/sounds
     environment:
       - JIGASI_SIP_PASSWORD
-      - JIGATE_ESL_PASSWORD
-      - JIGATE_EXTERNAL_IP=${JIGATE_EXTERNAL_IP:-127.0.0.1}
-      - JIGATE_EXTERNAL_SIP_PORT=${JIGATE_EXTERNAL_SIP_PORT:-5060}
-      - JIGATE_INTERNAL_IP=${JIGATE_INTERNAL_IP:-interface:ipv4/eth1}
-      - JIGATE_INTERNAL_SIP_PORT=${JIGASI_SIP_PORT:-5060}
-      - JIGATE_REGISTRATION_PASSWORD
-      - JIGATE_REGISTRATION_USERNAME=${JIGATE_REGISTRATION_USER:-user}
-      - JIGATE_RTP_END_PORT=${JIGATE_RTP_END_PORT:-20250}
-      - JIGATE_RTP_START_PORT=${JIGATE_RTP_START_PORT:-20200}
+      - FREESWITCH_ESL_PASSWORD
+      - FREESWITCH_EXTERNAL_IP=${FREESWITCH_EXTERNAL_IP:-127.0.0.1}
+      - FREESWITCH_EXTERNAL_SIP_PORT=${FREESWITCH_EXTERNAL_SIP_PORT:-5060}
+      - FREESWITCH_INTERNAL_IP=${FREESWITCH_INTERNAL_IP:-interface:ipv4/eth1}
+      - FREESWITCH_INTERNAL_SIP_PORT=${JIGASI_SIP_PORT:-5060}
+      - FREESWITCH_REGISTRATION_PASSWORD
+      - FREESWITCH_REGISTRATION_USERNAME=${FREESWITCH_REGISTRATION_USER:-user}
+      - FREESWITCH_RTP_END_PORT=${FREESWITCH_RTP_END_PORT:-20250}
+      - FREESWITCH_RTP_START_PORT=${FREESWITCH_RTP_START_PORT:-20200}
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - SIPGW_SIP_DOMAIN=${SIPGW_SIP_DOMAIN:-meet.jitsi}
       - SIPGW_SIP_PASSWORD
@@ -29,40 +29,40 @@ services:
       - SIPGW_SIP_SERVER=${SIPGW_SIP_SERVER:-sipgw.meet.jitsi}
       - SIPGW_SIP_USERNAME=${SIPGW_SIP_USERNAME:-jigate}
     networks:
-      jigate:
+      freeswitch:
         aliases:
-          - ${JIGASI_SIP_SERVER:-jigate.meet.jitsi}
+          - ${JIGASI_SIP_SERVER:-freeswitch.meet.jitsi}
       meet.jitsi:
         aliases:
-          - ${JIGASI_SIP_SERVER:-jigate.meet.jitsi}
+          - ${JIGASI_SIP_SERVER:-freeswitch.meet.jitsi}
 
-  jigatecon:
-    image: jigate/jigatecon:latest
+  jigate:
+    image: jigate/jigate:latest
     restart: ${RESTART_POLICY:-unless-stopped}
     volumes:
-      - ../jigate:/home/node/jigatecon
+      - ../jigate:/home/node/jigate
     environment:
       - JIGASI_SIP_URI=jigasi@meet.jitsi
-      - JIGATE_ESL_PASSWORD
-      - JIGATE_IVR_DESTINATION=${JIGATE_IVR_DESTINATION:-1000}
-      - JIGATE_SERVER=${JIGASI_SIP_SERVER:-jigate.meet.jitsi}
+      - FREESWITCH_ESL_PASSWORD
+      - FREESWITCH_IVR_DESTINATION=${FREESWITCH_IVR_DESTINATION:-1000}
+      - FREESWITCH_SERVER=${JIGASI_SIP_SERVER:-freeswitch.meet.jitsi}
       - LOG_LEVEL
     networks:
       meet.jitsi:
     depends_on:
-      - jigate
+      - freeswitch
 
   jigasi:
     environment:
-      - JIGASI_SIP_SERVER=${JIGASI_SIP_SERVER:-jigate.meet.jitsi}
+      - JIGASI_SIP_SERVER=${JIGASI_SIP_SERVER:-freeswitch.meet.jitsi}
       - JIGASI_SIP_PORT=${JIGASI_SIP_PORT:-5060}
       - JIGASI_SIP_URI=jigasi@meet.jitsi
     depends_on:
-      - jigate
+      - freeswitch
 
   jicofo:
     environment:
       - JIGASI_SIP_URI=jigasi@meet.jitsi
 
 networks:
-  jigate:
+  freeswitch:

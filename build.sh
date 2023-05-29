@@ -5,5 +5,5 @@ set -euxo pipefail
 cd $DIR
 ./build-node.sh
 echo "#### Rebuild the docker images"
-docker build -t jigate/jigatecon .
-docker build -t jigate/jigate jigate
+docker build -t jigate/jigate .
+docker build -t jigate/freeswitch freeswitch

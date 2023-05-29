@@ -4,9 +4,9 @@
         <param name="dial-string" value="${sofia_contact(${dialed_user}@${dialed_domain})}"/>
     </params>
     <users>
-        <user id="$${jigate_registration_username}">
+        <user id="$${freeswitch_registration_username}">
             <params>
-                <param name="password" value="$${jigate_registration_password}"/>
+                <param name="password" value="$${freeswitch_registration_password}"/>
             </params>
             <variables>
                 <variable name="sip-force-contact" value="NDLB-connectile-dysfunction-2.0"/>

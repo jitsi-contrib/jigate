@@ -16,7 +16,7 @@ import stats from './stats';
 
 const CONNECTION_RETRY_TIMEOUT = 10000;
 const jigasiSipUri = process.env.JIGASI_SIP_URI;
-const ivrNumber = process.env.JIGATE_IVR_DESTINATION;
+const ivrNumber = process.env.FREESWITCH_IVR_DESTINATION;
 restAPI;
 const STATS_POLLING_INTERVAL = 60000;
 

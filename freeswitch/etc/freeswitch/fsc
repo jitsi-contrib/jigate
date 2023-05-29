@@ -1,0 +1,2 @@
+#!/bin/sh
+fs_cli --host=$(hostname) --password=$FREESWITCH_ESL_PASSWORD ${@:+-x} "$@"
