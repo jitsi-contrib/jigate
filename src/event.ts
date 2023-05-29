@@ -16,14 +16,8 @@ export enum CustomChannelVariables {
 }
 
 export enum ChannelEventName {
-    ChannelBridge = 'CHANNEL_BRIDGE',
-    ChannelExecuteComplete = 'CHANNEL_EXECUTE_COMPLETE',
-    ChannelHangup = 'CHANNEL_HANGUP',
     HandRaiseToggle = 'HAND_RAISE_TOGGLE',
-    JigasiCall = 'JIGASI_CALL',
     MuteToggle = 'MUTE_TOGGLE',
-    RecvInfo = 'RECV_INFO',
-    SessionHeartbeat = 'SESSION_HEARTBEAT',
 }
 
 export enum EventFilter {
