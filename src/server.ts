@@ -131,7 +131,7 @@ const handleChannelHangup = (event: Event) => (event => {
 
     const duration = Math.round((new Date().getTime() - createdTime) / 1000);
 
-    Log.info(`${name} event from ${isInbound ? 'participant' : 'Jigasi'} with participantUuid (${participantUuid}) and jigasiUuid (${jigasiUuid}). Cause: ${hangupCause}, call duration: ${duration} seconds. event: ${JSON.stringify(event.eslEvent.headers)}`);
+    Log.info(`${name} event from ${isInbound ? 'participant' : 'Jigasi'} with participantUuid (${participantUuid}) and jigasiUuid (${jigasiUuid}). Cause: ${hangupCause}, call duration: ${duration} seconds.`);
     setCallState(event, CallState.HungUp);
     if (isInbound) {
         // Participant hung up.
