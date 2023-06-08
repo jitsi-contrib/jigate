@@ -1,18 +1,23 @@
+<!-- See https://developer.signalwire.com/freeswitch/FreeSWITCH-Explained/Modules/mod-opus/FreeSWITCH-And-The-Opus-Audio-Codec_12517398/#configuration-parameters -->
 <configuration name="opus.conf">
     <settings>
+        <!-- Decoder params -->
+        <param name="maxplaybackrate" value="48000"/>
+        <param name="use-jb-lookahead" value="1"/>
+        <!-- Encoder params -->
+        <param name="maxaveragebitrate" value="14400"/>
+        <param name="sprop-maxcapturerate" value="0"/>
         <param name="use-vbr" value="1"/>
         <param name="use-dtx" value="1"/>
         <param name="complexity" value="10"/>
-        <param name="packet-loss-percent" value="15"/>
         <param name="keep-fec-enabled" value="1"/>
-        <param name="use-jb-lookahead" value="1"/>
-        <param name="advertise-useinbandfec" value="1"/>
-        <param name="maxaveragebitrate" value="14400"/>
-        <param name="maxplaybackrate" value="8000"/>
-        <param name="sprop-maxcapturerate" value="8000"/>
-        <param name="adjust-bitrate" value="1"/>
-        <param name="negotiate-bitrate" value="1"/>
-        <param name="bitrate-negotiation" value="1"/>
+        <param name="packet-loss-percent" value="15"/>
         <param name="mono" value="1"/>
+        <!-- Other params -->
+        <param name="advertise-useinbandfec" value="1"/>
+        <param name="asymmetric-sample-rates" value="1"/>
+        <param name="bitrate-negotiation" value="1"/>
+        <param name="negotiate-bitrate" value="1"/>
+        <param name="adjust-bitrate" value="1"/>
     </settings>
 </configuration>
