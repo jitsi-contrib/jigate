@@ -73,7 +73,7 @@ const connectToMeeting = (event: ChannelEvent) => {
 
     domainBase && freeswitch.executeAsync('set', `sip_h_X-Domain-Base=${domainBase}`, participantUuid);
     freeswitch.executeAsync('multiset', `sip_h_X-Room-Name=${roomName} originate_timeout=3600 continue_on_fail=true`, participantUuid);
-    freeswitch.executeAsync('bridge', `{absolute_codec_string='OPUS'}[leg_timeout=3600]user/${jigasiSipUri}`, participantUuid);
+    freeswitch.executeAsync('bridge', `{absolute_codec_string=\${ep_codec_string}}[leg_timeout=3600]user/${jigasiSipUri}`, participantUuid);
     setCallState(event, CallState.WaitConference)
 };
 
