@@ -3,6 +3,12 @@
    <context name="public">
       <extension name="inbound">
          <condition field="destination_number" expression=".*">
+            <!-- See https://developer.signalwire.com/freeswitch/FreeSWITCH-Explained/Modules/mod-opus/FreeSWITCH-And-The-Opus-Audio-Codec_12517398/#configuration-parameters -->
+            <action application="set" data="jitterbuffer_msec=2p:25p:"/>
+            <action application="set" data="rtp_jitter_buffer_plc=true"/>
+            <action application="set" data="rtp_jitter_buffer_during_bridge=true"/>
+            <action application="set" data="suppress_cng=true"/>
+
             <action application="event" data="Event-Name=INBOUND_CALL"/>
             <action application="park"/>
          </condition>
