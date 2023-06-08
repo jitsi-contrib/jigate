@@ -8,7 +8,6 @@
         <param name="dialplan" value="XML"/>
         <param name="dtmf-duration" value="2000"/>
         <param name="forward-unsolicited-mwi-notify" value="false"/>
-        <param name="inbound-codec-negotiation" value="generous"/>
         <param name="log-auth-failures" value="false"/>
         <param name="log-level" value="0"/>
         <param name="manage-presence" value="false"/>
@@ -33,8 +32,11 @@
                 <param name="multiple-registrations" value="contact"/>
                 <param name="caller-id-type" value="pid"/>
                 <param name="disable-transcoding" value="false"/>
-                <param name="inbound-late-negotiation" value="true"/>
                 <param name="inherit_codec" value="true"/>
+                <param name="inbound-late-negotiation" value="true"/>
+                <param name="inbound-codec-negotiation" value="greedy"/>
+                <param name="inbound-codec-prefs" value="$${global_codec_prefs}"/>
+                <param name="outbound-codec-prefs" value="$${global_codec_prefs}"/>
             </settings>
 
             <gateways>
@@ -62,8 +64,11 @@
                 <param name="rtp-ip" value="$${freeswitch_internal_ip}"/>
                 <param name="local-network-acl" value="rfc1918.auto"/>
                 <param name="disable-transcoding" value="false"/>
-                <param name="inbound-late-negotiation" value="true"/>
                 <param name="inherit_codec" value="true"/>
+                <param name="inbound-late-negotiation" value="true"/>
+                <param name="inbound-codec-negotiation" value="greedy"/>
+                <param name="inbound-codec-prefs" value="$${global_codec_prefs}"/>
+                <param name="outbound-codec-prefs" value="$${global_codec_prefs}"/>
             </settings>
 
             <domains>
