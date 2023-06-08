@@ -18,7 +18,6 @@
     <X-PRE-PROCESS cmd="env-set" data="sipgw_sip_username=$SIPGW_SIP_USERNAME"/>
 
     <X-PRE-PROCESS cmd="set" data="global_codec_prefs=OPUS,G722,SPEEX,PCMU,PCMA,GSM"/>
-    <X-PRE-PROCESS cmd="set" data="outbound_codec_prefs=OPUS,G722,SPEEX,PCMU,PCMA,GSM"/>
 
     <section name="configuration" description="Various Configuration">
         <X-PRE-PROCESS cmd="include" data="autoload_configs/*.xml"/>
