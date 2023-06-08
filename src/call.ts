@@ -18,7 +18,7 @@ const LOOP_AUDIO_MESSAGE_TIME = '30'; // in seconds
 export const playAudioMessage = (event: ChannelEvent, message: AudioMessage) => {
     const { participantUuid } = event;
 
-    freeswitch.bgapi(`uuid_broadcast ${participantUuid} ${message}`, participantUuid);
+    freeswitch.executeAsync('playback', message, participantUuid);
 }
 
 export const loopAudioMessage = (event: ChannelEvent, message: AudioMessage) => {
