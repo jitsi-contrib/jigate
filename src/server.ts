@@ -151,7 +151,6 @@ const handleChannelHangup = (event: Event) => (event => {
 const handleInboundCall = (event: Event) => (event => {
     const { destinationNumber, name, participantUuid } = event;
 
-    freeswitch.executeAsync('log', `CONSOLE New Jigasi call to ${destinationNumber}`, participantUuid);
     if (!destinationNumber || destinationNumber == ivrNumber) {
         Log.info(`${name} event from participantUuid (${participantUuid}) to IVR (${destinationNumber}).`);
         freeswitch.executeAsync('answer', '', participantUuid);
