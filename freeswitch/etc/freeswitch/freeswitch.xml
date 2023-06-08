@@ -2,10 +2,12 @@
 <document type="freeswitch/xml">
     <X-PRE-PROCESS cmd="env-set" data="jigasi_sip_password=$JIGASI_SIP_PASSWORD"/>
     <X-PRE-PROCESS cmd="env-set" data="freeswitch_esl_password=$FREESWITCH_ESL_PASSWORD"/>
+    <X-PRE-PROCESS cmd="env-set" data="freeswitch_external_ext_ip=$FREESWITCH_EXTERNAL_EXT_IP"/>
     <X-PRE-PROCESS cmd="env-set" data="freeswitch_external_ip=$FREESWITCH_EXTERNAL_IP"/>
     <X-PRE-PROCESS cmd="env-set" data="freeswitch_external_sip_port=$FREESWITCH_EXTERNAL_SIP_PORT"/>
     <X-PRE-PROCESS cmd="env-set" data="freeswitch_internal_ip=$FREESWITCH_INTERNAL_IP"/>
     <X-PRE-PROCESS cmd="env-set" data="freeswitch_internal_sip_port=$FREESWITCH_INTERNAL_SIP_PORT"/>
+    <X-PRE-PROCESS cmd="env-set" data="freeswitch_local_network_acl=$FREESWITCH_LOCAL_NETWORK_ACL"/>
     <X-PRE-PROCESS cmd="env-set" data="freeswitch_registration_password=$FREESWITCH_REGISTRATION_PASSWORD"/>
     <X-PRE-PROCESS cmd="env-set" data="freeswitch_registration_username=$FREESWITCH_REGISTRATION_USERNAME"/>
     <X-PRE-PROCESS cmd="env-set" data="freeswitch_rtp_end_port=$FREESWITCH_RTP_END_PORT"/>
