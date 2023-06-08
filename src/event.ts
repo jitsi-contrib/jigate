@@ -74,6 +74,7 @@ export class ChannelEvent {
             'Job-Command-Arg': jobCommandArg,
             'Other-Leg-Destination-Number': otherLegDestinationNumber,
             'Other-Leg-Unique-ID': otherLegUniqueId,
+            'SIP-Content-Type': sipContentType,
             'SIP-From-User': sipFromUser,
             'variable_bridge_to': bridgedTo,
             'Unique-ID': uniqueId,
@@ -118,11 +119,11 @@ export class ChannelEvent {
         this.participantUuid = (this.isInbound ? uniqueId : otherLegUniqueId) || '';
         this.destinationNumber = this.isInbound ? callerDestinationNumber : otherLegDestinationNumber;
 
-        if (this.name == 'RECV_INFO' && this.isJigasiEvent && this.body) {
+        if (this.name == 'RECV_INFO' && sipContentType == 'application/json' && this.body) {
             try {
                 this.jigasiMessage = JSON.parse(this.body);
             } catch (err) {
-                Log.warn(`RECV_INFO event from Jigasi with unknown message body: ${this.body}`);
+                Log.warn(`RECV_INFO event with unknown 'application/json' message body: ${this.body}`);
             }
         }
     }
