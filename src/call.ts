@@ -24,9 +24,9 @@ export const playAudioMessage = (event: ChannelEvent, message: AudioMessage) => 
 export const loopAudioMessage = (event: ChannelEvent, message: AudioMessage) => {
     const { participantUuid } = event;
 
+    playAudioMessage(event, message);
     freeswitch.executeAsync('set', `${CustomChannelVariables.LoopingAudioMessage}=${message}`, participantUuid);
     freeswitch.executeAsync('enable_heartbeat', LOOP_AUDIO_MESSAGE_TIME, participantUuid);
-    playAudioMessage(event, message);
 }
 
 export const sendJigasiInfoRequest = (event: ChannelEvent, type: string, data: object) => {
@@ -73,14 +73,14 @@ export const setCallState = (event: ChannelEvent, callState: CallState) => {
 }
 
 export const setHandRaised = (event: ChannelEvent, handRaised: boolean) => {
+    playAudioMessage(event, handRaised ? AudioMessage.HandIsRaised : AudioMessage.HandIsLowered);
     freeswitch.executeAsync('set', `${CustomChannelVariables.HandRaised}=${handRaised}`, event.participantUuid);
     sendJigasiHandRaiseRequest(event, handRaised);
-    playAudioMessage(event, handRaised ? AudioMessage.HandIsRaised : AudioMessage.HandIsLowered);
 }
 
 export const setMuted = (event: ChannelEvent, muted: boolean) => {
-    freeswitch.executeAsync('set', `${CustomChannelVariables.Muted}=${muted}`, event.participantUuid);
     playAudioMessage(event, muted ? AudioMessage.YouAreMuted : AudioMessage.YouAreUnmuted);
+    freeswitch.executeAsync('set', `${CustomChannelVariables.Muted}=${muted}`, event.participantUuid);
 }
 
 export const setNickname = (event: ChannelEvent, nickname: string) => {

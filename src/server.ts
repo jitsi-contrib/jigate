@@ -104,6 +104,7 @@ const handleChannelBridge = (event: Event) => (event => {
 
     if (jigasiUuid) {
         setCallState(event, CallState.Bridged);
+        playAudioMessage(event, AudioMessage.ConferenceStarted);
 
         // Enable sending info messages to Jigasi.
         freeswitch.executeAsync('set', `api_result=\${uuid_setvar ${jigasiUuid} fs_send_unsupported_info true}`, jigasiUuid);
@@ -111,7 +112,6 @@ const handleChannelBridge = (event: Event) => (event => {
         // Have Freeswitch triggering digit action events.
         freeswitch.executeAsync('bind_digit_action', `userActions,*6,exec:event,Event-Name=${ChannelEventName.MuteToggle}`, participantUuid);
         freeswitch.executeAsync('bind_digit_action', `userActions,*9,exec:event,Event-Name=${ChannelEventName.HandRaiseToggle}`, participantUuid);
-        playAudioMessage(event, AudioMessage.ConferenceStarted);
     } else Log.error(`${name} event for participantUuid (${participantUuid}) without a jigasiUuid (${jigasiUuid}). This is unexpected.`)
 })(new ChannelEvent(event));
 
@@ -199,8 +199,8 @@ const handleRecvInfo = (event: Event) => (event => {
                 break;
 
             case JigasiMessageType.AvModerationApproved:
-                setAvModeration(event, false);
                 playAudioMessage(event, AudioMessage.PleaseUnmute);
+                setAvModeration(event, false);
                 break;
 
             case JigasiMessageType.AvModerationDenied:
