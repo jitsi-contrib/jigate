@@ -1,6 +1,4 @@
 ---
-version: '3.8'
-
 services:
   freeswitch:
     image: jigate/freeswitch:latest
@@ -35,6 +33,8 @@ services:
         aliases:
           - ${JIGASI_SIP_SERVER:-freeswitch.meet.jitsi}
       meet.jitsi:
+        # Control the ordering of the container interfaces.
+        priority: 1
         aliases:
           - ${JIGASI_SIP_SERVER:-freeswitch.meet.jitsi}
 
