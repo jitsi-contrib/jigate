@@ -12,13 +12,13 @@ export enum JigasiMessageType {
     AvModerationApproved = 9,
     AvModerationEnabled = 8,
     AvModerationDenied = 10,
-    EndConference = 12,
+    EndConference = 22,
     LobbyAllowedJoin = 6,
     LobbyJoined = 3,
     LobbyLeft = 5,
     LobbyRejectedJoin = 7,
-    LowerHand = 13,
-    Rename = 14,
+    LowerHand = 23,
+    Rename = 24,
     RequestRoomAccess = 4,
 }
 
