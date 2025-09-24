@@ -1,5 +1,5 @@
 # See https://github.com/signalwire/freeswitch/blob/master/docker/release/Dockerfile
-FROM alpine:3.16
+FROM alpine:3.22
 COPY . /
 RUN apk update && apk add --no-cache --clean-protected freeswitch
 HEALTHCHECK --interval=15s --timeout=5s \

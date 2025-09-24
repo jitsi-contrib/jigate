@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 DIR=$(dirname "$(pwd)/$0")
 
 set -euxo pipefail
